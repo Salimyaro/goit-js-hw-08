@@ -6,31 +6,37 @@ const refs = {
   lightboxImg: document.querySelector('.js-lightbox img'),
 };
 
-galleryItems.forEach(({ preview, original, description }, index) =>
-  refs.gallery.insertAdjacentHTML(
-    'beforeend',
-    `<li class="gallery__item">
-			<a
-				class="gallery__link"
-				href="${original}"
-			>
-				<img
-					class="gallery__image"
-					src="${preview}"
-					data-source="${original}"
-					data-index="${index}"
-					alt="${description}"
-				/>
-			</a>
-		</li>`,
-  ),
-);
+const galleryItemsMarkup = galleryItems
+  .map(({ preview, original, description }, index) =>
+    makeGalleryItemMarkup(preview, original, description, index),
+  )
+  .join('');
+
+refs.gallery.insertAdjacentHTML('beforeend', galleryItemsMarkup);
 
 let activeIndex;
 
 refs.gallery.addEventListener('click', galleryClickCb);
 refs.lightbox.addEventListener('click', lightboxClickCb);
 
+function makeGalleryItemMarkup(preview, original, description, index) {
+  return `
+  <li class="gallery__item">
+    <a
+      class="gallery__link"
+      href="${original}"
+    >
+      <img
+        class="gallery__image"
+        src="${preview}"
+				data-source="${original}"
+				data-index="${index}"
+				alt="${description}"
+      />
+    </a>
+  </li>
+  `;
+}
 function openModal() {
   refs.lightbox.classList.add('is-open');
   window.addEventListener('keydown', windowKeydownCb);
