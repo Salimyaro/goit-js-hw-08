@@ -33,10 +33,12 @@ refs.lightbox.addEventListener('click', lightboxClickCb);
 
 function openModal() {
   refs.lightbox.classList.add('is-open');
+  window.addEventListener('keydown', windowKeydownCb);
 }
 function closeModal() {
   refs.lightbox.classList.remove('is-open');
   refs.lightboxImg.src = '';
+  refs.lightboxImg.alt = '';
   window.removeEventListener('keydown', windowKeydownCb);
 }
 function galleryClickCb(event) {
@@ -45,8 +47,8 @@ function galleryClickCb(event) {
     return;
   }
   refs.lightboxImg.src = event.target.dataset.source;
+  refs.lightboxImg.alt = event.target.alt;
   openModal();
-  window.addEventListener('keydown', windowKeydownCb);
   activeIndex = +event.target.dataset.index;
 }
 function lightboxClickCb(event) {
@@ -62,21 +64,19 @@ function windowKeydownCb({ key }) {
     closeModal();
   }
   if (key === 'ArrowLeft') {
-    if (activeIndex >= 1) {
-      refs.lightboxImg.src = galleryItems[activeIndex - 1].original;
-      activeIndex -= 1;
-    } else {
-      refs.lightboxImg.src = galleryItems[galleryItems.length - 1].original;
-      activeIndex = galleryItems.length - 1;
-    }
+    activeIndex >= 1
+      ? (activeIndex -= 1)
+      : (activeIndex = galleryItems.length - 1);
+    updateModalImg(activeIndex);
   }
   if (key === 'ArrowRight') {
-    if (activeIndex < galleryItems.length - 1) {
-      refs.lightboxImg.src = galleryItems[activeIndex + 1].original;
-      activeIndex += 1;
-    } else {
-      refs.lightboxImg.src = galleryItems[0].original;
-      activeIndex = 0;
-    }
+    activeIndex < galleryItems.length - 1
+      ? (activeIndex += 1)
+      : (activeIndex = 0);
+    updateModalImg(activeIndex);
   }
+}
+function updateModalImg(activeIndex) {
+  refs.lightboxImg.src = galleryItems[activeIndex].original;
+  refs.lightboxImg.alt = galleryItems[activeIndex].description;
 }
